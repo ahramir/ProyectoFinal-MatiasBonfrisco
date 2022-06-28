@@ -1,8 +1,7 @@
 
 let carritoAPI = [];
-let carrito = [];
 document.addEventListener('DOMContentLoaded', () => {
-    localStorage.removeItem("carrito");
+
 
     let baseDeDatos = [
 
@@ -93,6 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     function anyadirProductoAlCarrito(evento) {
+        let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
         carrito.push(evento.target.getAttribute('marcador'))
 
         let carritoStorage = JSON.parse(localStorage.getItem("carrito")) || [];
@@ -109,17 +109,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderizarCarrito() {
         DOMcarrito.textContent = "";
-        const carritoSinDuplicados = [...new Set(carrito)];
+        let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+        let listaIDs = carrito.map((elem) => elem.id);
+        const listaIDSinDuplicados = [...new Set(listaIDs)];
 
-        carritoSinDuplicados.forEach((item) => {
-            const miItem = baseDeDatos.filter((itemBaseDatos) => {
-
+        listaIDSinDuplicados.forEach((item) => {
+            const miItem = baseDeDatos.filter((itemBaseDatos) => {;
                 return itemBaseDatos.id === parseInt(item);
             });
-
+           
             const numeroUnidadesItem = carrito.reduce((total, itemId) => {
 
-                return itemId === item ? total += 1 : total;
+                return itemId.id === item ? total += 1 : total;
             }, 0);
 
             const miNodo = document.createElement('li');
@@ -139,6 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     function borrarItemCarrito(evento) {
+        let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
         const id = evento.target.dataset.item;
         carrito = carrito.filter((carritoId) => {
             return carritoId !== id;
@@ -154,11 +156,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function calcularTotal() {
-
+        let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
         return carrito.reduce((total, item) => {
 
             const miItem = baseDeDatos.filter((itemBaseDatos) => {
-                return itemBaseDatos.id === parseInt(item);
+                return itemBaseDatos.id === parseInt(item.id);
             });
             return total + miItem[0].precio;
         }, 0).toFixed(2);
